@@ -17,7 +17,7 @@ app.use(pinoHttp({
 app.get("/contacts", async (req,res) => {
     try {
         const contact = await getContacts()
-        res.status(200).send({
+        res.status(200).json({
             status: 200,
         message: 'Successfully found contacts!',
         data: contact,
@@ -34,7 +34,7 @@ app.get("/contacts/:contactsID", async (req,res) =>{
     try {
         const contact = await getContactsID(contactsID)
         if (!contact){
-            return res.status(404).send({message: "Contact not found"})
+            return res.status(404).json({message: "Contact not found"})
         }
         res.status(200).send({
             status: 200,
