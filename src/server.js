@@ -5,7 +5,6 @@ import { getContacts, getContactsID } from './services/contact.js';
 
 const app = express();
  
-const PORT = "8080"
 
 app.use(cors());
 
@@ -57,6 +56,9 @@ app.use("*", (req, res) => {
       message: "Not found",
     });
   });;
+
+
+  const PORT = process.env.PORT || 3000;
 
 async function setupServer (){
     try {
