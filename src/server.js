@@ -9,7 +9,6 @@ const app = express();
 
 app.use("/contacts",ContactsRouter)
 
-
 app.use(cors());
 
 app.use(
