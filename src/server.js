@@ -7,22 +7,6 @@ import errorHandler from "./middlewares/errorHandler.js"
 
 const app = express();
 
-app.use("/contacts",ContactsRouter)
-
-app.use(cors());
-
-app.use(
-    pinoHttp({
-        transport: {
-            target: "pino-pretty",
-        },
-    })
-);
-
-app.use(errorHandler)
-
-app.use(notFoundHandler);
-
 
 const PORT = process.env.PORT || 3000;
 
@@ -35,5 +19,24 @@ async function setupServer() {
         console.error(error);
     }
 }
+
+app.use(cors());
+
+app.use(
+    pinoHttp({
+        transport: {
+            target: "pino-pretty",
+        },
+    })
+);
+
+app.use("/contacts",ContactsRouter)
+
+app.use(errorHandler)
+
+app.use(notFoundHandler);
+
+
+
 
 export { setupServer };
