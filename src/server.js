@@ -20,6 +20,8 @@ async function setupServer() {
     }
 }
 
+export { setupServer };
+
 app.use(cors());
 
 app.use(
@@ -29,7 +31,6 @@ app.use(
         },
     })
 );
-
 app.use("/contacts",ContactsRouter)
 
 app.use(errorHandler)
@@ -37,6 +38,3 @@ app.use(errorHandler)
 app.use(notFoundHandler);
 
 
-
-
-export { setupServer };
