@@ -1,75 +1,40 @@
-import express from 'express'
+import express from "express";
 import pinoHttp from "pino-http";
-import cors from "cors"
-import { getContacts, getContactsID } from './services/contact.js';
+import cors from "cors";
+import ContactsRouter from "./routes/contacts.js";
+import notFoundHandler from "./middlewares/notFoundHandler.js";
+import errorHandler from "./middlewares/errorHandler.js"
 
 const app = express();
- 
 
-app.use(cors());
 
-app.use(pinoHttp({
-    transport:{
-        target: "pino-pretty"
-    }
-}))
+const PORT = process.env.PORT || 3000;
 
-app.get("/contacts", async (req,res) => {
+async function setupServer() {
     try {
-        const contact = await getContacts()
-        res.status(200).send({
-            status: 200,
-        message: 'Successfully found contacts!',
-        data: contact,
-        })
-    } catch (error) {
-        res.status(500).json({
-            message: 'Failed to get contacts',
-            error: error.message,
-          });
-    }
-})
-app.get("/contacts/:contactsID", async (req,res) =>{
-    const {contactsID} = req.params
-    try {
-        const contact = await getContactsID(contactsID)
-        if (!contact){
-            return res.status(404).send({message: "Contact not found"})
-        }
-        res.status(200).send({
-            status: 200,
-            message: `Successfully found contact with id ${contactsID}!`,
-            data: contact,
-        })
-    } catch (error) {
-        res.status(500).json({
-            message: 'Failed to get contacts',
-            error: error.message,
-          });
-    }
-})
-
-
-
-app.use("*", (req, res) => {
-    res.status(404).send({
-      message: "Not found",
-    });
-  });;
-
-
-  const PORT = process.env.PORT || 3000;
-
-async function setupServer (){
-    try {
-        
         await app.listen(8080, () => {
             console.log(`Server is running on port ${PORT}`);
-          });
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
     }
 }
 
+export { setupServer };
 
-export {setupServer};
+app.use(cors());
+
+app.use(
+    pinoHttp({
+        transport: {
+            target: "pino-pretty",
+        },
+    })
+);
+app.use("/contacts",ContactsRouter)
+
+app.use(errorHandler)
+
+app.use(notFoundHandler);
+
+
