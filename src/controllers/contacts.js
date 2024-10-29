@@ -6,9 +6,22 @@ import {
   patchContact,
 } from "../services/contact.js";
 import createHttpError from "http-errors";
+import { parseParams } from "../utils/parseParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
 
 export async function ControllesrsGetContacts(req, res) {
-  const contact = await getContacts();
+  const { page, perPage } = parseParams(req.query);
+console.log(req.params);
+const {sortBy, sortOrder} = parseSortParams(req.query);
+
+  const contact = await getContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+  });
+ 
+
   return res.status(200).json({
     status: 200,
     message: "Successfully found contacts!",
@@ -53,7 +66,6 @@ export async function ControllesrsDelete(req, res) {
 }
 export async function ControllesrsPatch(req, res) {
   const { contactsID } = req.params;
-
 
   const result = await patchContact(contactsID, req.body);
 
