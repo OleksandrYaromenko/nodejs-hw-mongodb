@@ -14,7 +14,7 @@ router.get("/:contactsID",isValidId, ctrlWrapper(ControllesrsGetContactsID));
   
 router.post("/", jsonParser,validateBody(contactsSchema), ctrlWrapper(ControllesrsPost));
 
-router.patch("/:contactsID", isValidId,jsonParser,ctrlWrapper(ControllesrsPatch))
+router.patch("/:contactsID", isValidId,jsonParser, validateBody(contactsSchema),ctrlWrapper(ControllesrsPatch))
 
 router.delete("/:contactsID",isValidId, ctrlWrapper(ControllesrsDelete))
 
