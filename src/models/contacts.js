@@ -20,6 +20,11 @@ const contactSchema = new mongoose.Schema({
     required: true,
     default: "rersonal",
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    require: true,
+  }
   
 },{ timestamps: true });
 

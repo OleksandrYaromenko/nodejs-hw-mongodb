@@ -11,16 +11,19 @@ import { parseSortParams } from "../utils/parseSortParams.js";
 
 export async function ControllesrsGetContacts(req, res) {
   const { page, perPage } = parseParams(req.query);
-console.log(req.params);
 const {sortBy, sortOrder} = parseSortParams(req.query);
+const userId = req.user.id;
+console.log(userId, "user id");
 
+ 
   const contact = await getContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
+    userId
   });
- 
+
 
   return res.status(200).json({
     status: 200,
