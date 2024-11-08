@@ -24,17 +24,13 @@ export async function authenticate (req, res, next) {
 
  }
  const user = await User.findById(session.userId);
-  req.user = user
 
+if (user === null){
+    return next(createHttpError(401, 'User not found'))
+ }
+ req.user = user
 
-
-
-// if (user === null){
-//     return next(createHttpError(401, 'User not found'))
  
-// }
-//   req.user = {id: user._id};
-
 
   next()
 }
