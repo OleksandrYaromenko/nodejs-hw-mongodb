@@ -1,7 +1,6 @@
 import createHttpError from "http-errors";
 import { Session } from "../models/session.js";
 import { User } from "../models/user.js";
-import mongoose from "mongoose";
 
 export async function authenticate (req, res, next) {
  const {authorization} = req.headers;
@@ -26,9 +25,8 @@ export async function authenticate (req, res, next) {
  }
  const id = session.userId;
 
-const user = await User.find({_id: new mongoose.Types.ObjectId("672cc3a916ae719b53181af3")});
-
-console.log(user, "useeee");
+const user = await User.findById({id});
+req.user = user
 
 
 
