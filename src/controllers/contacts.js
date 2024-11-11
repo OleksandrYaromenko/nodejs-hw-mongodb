@@ -34,8 +34,9 @@ console.log(userId, "user id");
 
 export async function ControllesrsGetContactsID(req, res, next) {
   const { contactsID } = req.params;
+  const userId = req.user.id;
 
-  const contact = await getContactsID(contactsID);
+  const contact = await getContactsID(contactsID,userId);
   if (contact === null) {
     throw createHttpError(404, "Contacts not found");
   }
@@ -51,7 +52,9 @@ export async function ControllesrsPost(req, res) {
   //   phoneNumber: req.body.phoneNumber,
   //   contactType: req.body.contactType
   // }
-  const result = await createContact(req.body);
+  const userId = req.user.id;
+  const contactData = { ...req.body, userId };
+  const result = await createContact(contactData);
   return res.status(201).send({
     status: 201,
     message: "Successfully created a contact!",
@@ -60,8 +63,9 @@ export async function ControllesrsPost(req, res) {
 }
 export async function ControllesrsDelete(req, res) {
   const { contactsID } = req.params;
+  const userId = req.user.id;
 
-  const result = await deleteContact(contactsID);
+  const result = await deleteContact(contactsID,userId);
   if (result === null) {
     throw createHttpError(404, "Contacts not found");
   }
@@ -69,8 +73,9 @@ export async function ControllesrsDelete(req, res) {
 }
 export async function ControllesrsPatch(req, res) {
   const { contactsID } = req.params;
+  const userId = req.user.id; 
 
-  const result = await patchContact(contactsID, req.body);
+  const result = await patchContact(contactsID, req.body, userId);
 
   if (result === null) {
     throw createHttpError(404, "Contacts not found");

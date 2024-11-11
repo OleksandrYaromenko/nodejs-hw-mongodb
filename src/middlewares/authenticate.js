@@ -1,7 +1,6 @@
 import createHttpError from "http-errors";
 import { Session } from "../models/session.js";
 import { User } from "../models/user.js";
-import mongoose from "mongoose";
 
 export async function authenticate (req, res, next) {
  const {authorization} = req.headers;
@@ -24,20 +23,14 @@ export async function authenticate (req, res, next) {
     return next(createHttpError(401, 'Access token is expired'))
 
  }
- const id = session.userId;
+ const user = await User.findById(session.userId);
 
-const user = await User.find({_id: new mongoose.Types.ObjectId("672cc3a916ae719b53181af3")});
+if (user === null){
+    return next(createHttpError(401, 'User not found'))
+ }
+ req.user = user
 
-console.log(user, "useeee");
-
-
-
-
-// if (user === null){
-//     return next(createHttpError(401, 'User not found'))
  
-// }
-//   req.user = {id: user._id};
 
 
   next()

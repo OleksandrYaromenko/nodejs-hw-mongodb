@@ -14,7 +14,7 @@ export async function registerController(req, res) {
   const register = await registerUser(payload);
 
   res.send({
-    status: 200,
+    status: 201,
     message: "Successfully logged in an user!",
     data: register,
   });
