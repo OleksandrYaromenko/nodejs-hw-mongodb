@@ -21,13 +21,13 @@ export async function getContacts({ page, perPage, sortBy, sortOrder, userId }) 
   };
 }
 export async function getContactsID(contactID, userId) {
-  return await Contacts.findById({_id:contactID, userId  });
+  return await Contacts.findOne({_id:contactID, userId  });
 }
 export async function createContact(contact) {
   return Contacts.create(contact);
 }
 export async function deleteContact(contactID, userId) {
-  return Contacts.findByIdAndDelete({_id:contactID, userId });
+  return Contacts.findOneAndDelete({_id:contactID, userId });
 }
 export async function patchContact(contactID, newContact, userId) {
   return Contacts.findOneAndUpdate(
