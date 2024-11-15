@@ -1,0 +1,4 @@
+.src/tmp*
+!src/tmp/.gitkeep
+.src/piblic/*
+!src/piblic/photo/*
