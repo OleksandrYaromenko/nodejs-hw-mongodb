@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const contactSchema = new mongoose.Schema({
@@ -20,6 +21,15 @@ const contactSchema = new mongoose.Schema({
     required: true,
     default: "rersonal",
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    require: true,
+  },
+  photo:{
+    type: String,
+    default: null,
+  }
   
 },{ timestamps: true });
 

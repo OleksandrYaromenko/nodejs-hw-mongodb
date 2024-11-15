@@ -1,3 +1,5 @@
+import fs from "node:fs/promises"
+import path from "node:path"
 import {
   createContact,
   deleteContact,
@@ -6,9 +8,29 @@ import {
   patchContact,
 } from "../services/contact.js";
 import createHttpError from "http-errors";
+import { parseParams } from "../utils/parseParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import dotenv from "dotenv";
+
+ dotenv.config();
 
 export async function ControllesrsGetContacts(req, res) {
-  const contact = await getContacts();
+  const { page, perPage } = parseParams(req.query);
+const {sortBy, sortOrder} = parseSortParams(req.query);
+const userId = req.user.id;
+console.log(userId, "user id");
+
+ 
+  const contact = await getContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    userId
+  });
+
+
   return res.status(200).json({
     status: 200,
     message: "Successfully found contacts!",
@@ -18,8 +40,9 @@ export async function ControllesrsGetContacts(req, res) {
 
 export async function ControllesrsGetContactsID(req, res, next) {
   const { contactsID } = req.params;
+  const userId = req.user.id;
 
-  const contact = await getContactsID(contactsID);
+  const contact = await getContactsID(contactsID,userId);
   if (contact === null) {
     throw createHttpError(404, "Contacts not found");
   }
@@ -35,7 +58,24 @@ export async function ControllesrsPost(req, res) {
   //   phoneNumber: req.body.phoneNumber,
   //   contactType: req.body.contactType
   // }
-  const result = await createContact(req.body);
+  let photo = null;
+
+  if (typeof req.file !== 'undefined') {
+    if (process.env.ENABLE_CLOUDINARY === "true") {
+      const uploadPhoto = await uploadToCloudinary(req.file.path)
+      await fs.unlink(req.file.path) 
+      console.log(uploadPhoto);
+      photo =  uploadPhoto.secure_url
+    }else { 
+        await fs.rename(req.file.path, path.resolve("src","public/photo",req.file.filename))
+    photo = `http://localhost:3000/photo/${req.file.filename}`
+    }
+ 
+  }
+  
+  const userId = req.user.id;
+  const contactData = { ...req.body, userId, photo };
+  const result = await createContact(contactData);
   return res.status(201).send({
     status: 201,
     message: "Successfully created a contact!",
@@ -44,8 +84,9 @@ export async function ControllesrsPost(req, res) {
 }
 export async function ControllesrsDelete(req, res) {
   const { contactsID } = req.params;
+  const userId = req.user.id;
 
-  const result = await deleteContact(contactsID);
+  const result = await deleteContact(contactsID,userId);
   if (result === null) {
     throw createHttpError(404, "Contacts not found");
   }
@@ -53,9 +94,22 @@ export async function ControllesrsDelete(req, res) {
 }
 export async function ControllesrsPatch(req, res) {
   const { contactsID } = req.params;
+  const userId = req.user.id;
+  let photo = null; 
 
-
-  const result = await patchContact(contactsID, req.body);
+  if (typeof req.file !== 'undefined') {
+    if (process.env.ENABLE_CLOUDINARY === "true") {
+      const uploadPhoto = await uploadToCloudinary(req.file.path)
+      await fs.unlink(req.file.path) 
+      console.log(uploadPhoto);
+      photo =  uploadPhoto.secure_url
+    }else { 
+        await fs.rename(req.file.path, path.resolve("src","public/photo",req.file.filename))
+     photo = `http://localhost:3000/photo/${req.file.filename}`
+    }
+ 
+  }
+  const result = await patchContact(contactsID, req.body, userId , photo);
 
   if (result === null) {
     throw createHttpError(404, "Contacts not found");
