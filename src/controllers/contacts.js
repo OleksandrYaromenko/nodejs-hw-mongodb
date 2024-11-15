@@ -1,3 +1,5 @@
+import fs from "node:fs/promises"
+import path from "node:path"
 import {
   createContact,
   deleteContact,
@@ -8,6 +10,10 @@ import {
 import createHttpError from "http-errors";
 import { parseParams } from "../utils/parseParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import dotenv from "dotenv";
+
+ dotenv.config();
 
 export async function ControllesrsGetContacts(req, res) {
   const { page, perPage } = parseParams(req.query);
@@ -52,8 +58,23 @@ export async function ControllesrsPost(req, res) {
   //   phoneNumber: req.body.phoneNumber,
   //   contactType: req.body.contactType
   // }
+  let photo = null;
+
+  if (typeof req.file !== 'undefined') {
+    if (process.env.ENABLE_CLOUDINARY === "true") {
+      const uploadPhoto = await uploadToCloudinary(req.file.path)
+      await fs.unlink(req.file.path) 
+      console.log(uploadPhoto);
+      photo =  uploadPhoto.secure_url
+    }else { 
+        await fs.rename(req.file.path, path.resolve("src","public/photo",req.file.filename))
+    photo = `http://localhost:3000/photo/${req.file.filename}`
+    }
+ 
+  }
+  
   const userId = req.user.id;
-  const contactData = { ...req.body, userId };
+  const contactData = { ...req.body, userId, photo };
   const result = await createContact(contactData);
   return res.status(201).send({
     status: 201,
@@ -73,9 +94,22 @@ export async function ControllesrsDelete(req, res) {
 }
 export async function ControllesrsPatch(req, res) {
   const { contactsID } = req.params;
-  const userId = req.user.id; 
+  const userId = req.user.id;
+  let photo = null; 
 
-  const result = await patchContact(contactsID, req.body, userId);
+  if (typeof req.file !== 'undefined') {
+    if (process.env.ENABLE_CLOUDINARY === "true") {
+      const uploadPhoto = await uploadToCloudinary(req.file.path)
+      await fs.unlink(req.file.path) 
+      console.log(uploadPhoto);
+      photo =  uploadPhoto.secure_url
+    }else { 
+        await fs.rename(req.file.path, path.resolve("src","public/photo",req.file.filename))
+     photo = `http://localhost:3000/photo/${req.file.filename}`
+    }
+ 
+  }
+  const result = await patchContact(contactsID, req.body, userId , photo);
 
   if (result === null) {
     throw createHttpError(404, "Contacts not found");

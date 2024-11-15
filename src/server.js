@@ -7,6 +7,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import authRouter from "./routes/auth.js";
 import cookieParser from "cookie-parser";
 import { authenticate } from "./middlewares/authenticate.js";
+import path from "node:path";
 
 const app = express();
 
@@ -23,6 +24,8 @@ async function setupServer() {
 }
 
 export { setupServer };
+
+app.use("/photo", express.static(path.resolve("src","public/photo")))
 
 app.use(cors());
 
