@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.js";
 import cookieParser from "cookie-parser";
 import { authenticate } from "./middlewares/authenticate.js";
 import path from "node:path";
+import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 
 const app = express();
 
@@ -25,11 +26,12 @@ async function setupServer() {
 
 export { setupServer };
 
-app.use("/photo", express.static(path.resolve("src","public/photo")))
+app.use("/photo", express.static(path.resolve("src", "public/photo")));
+app.use("/api-docs", swaggerDocs());
 
 app.use(cors());
 
-app.use(cookieParser())
+app.use(cookieParser());
 
 app.use(
   pinoHttp({

@@ -1,0 +1,79 @@
+tags:
+  - Contacts
+summary: Create a contact
+operationId: createContact
+description: "Create a contact with payload"
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - name
+          - phoneNumber
+          - contactType
+        properties:
+          name:
+            description: "Contact's name"
+            type: string
+            example: "John Doe"
+          phoneNumber:
+            description: "Contact's phone number"
+            type: string
+            example: "+1234567890"
+          email:
+            description: "Contact's email"
+            type: string
+            example: "johndoe@example.com"
+          isFavourite:
+            description: "Whether the contact is a favorite"
+            type: boolean
+            example: false
+          contactType:
+            description: "Contact's type"
+            type: string
+            enum: ["work", "personal", "home"]
+            default: "personal"
+          photo:
+            description: "Contact's photo as a binary file"
+            type: string
+            format: binary
+responses:
+  "201":
+    description: Creates a contact
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully created a contact!
+            data:
+              type: object
+              $ref: ../../components/schemas/contacts.yaml
+  "400":
+    description: Bad Request - Missing required fields
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: Name, phone number, and contact type are required!

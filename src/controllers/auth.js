@@ -1,4 +1,5 @@
 import {
+  loginOrRegisterUser,
   loginUser,
   logoutUser,
   refreshSession,
@@ -6,6 +7,7 @@ import {
   requestResetPassword,
   resetPassword,
 } from "../services/auth.js";
+import { generateOauthURL, validateCode } from "../utils/googleAuth.js";
 
 export async function registerController(req, res) {
   const payload = {
@@ -92,4 +94,41 @@ export async function resetPwdController(req, res) {
   const {password, token} = req.body;
   await resetPassword(password, token);
   res.send("reset password");
+}
+
+
+export async function getAuthController(req, res) {
+  const url = generateOauthURL()
+  res.send({
+    status: 200,
+    message: "Google OAuth URL",
+    data: {
+      url,
+    },
+  })
+}
+
+export async function confirmAuthController(req, res) {
+  const {code} = req.body;
+
+  const ticket = await validateCode(code);
+  const session = await loginOrRegisterUser({email:ticket.payload.email, name: ticket.payload.name  });
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUtil,
+  });
+  res.cookie("sessionID", session._id, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUtil,
+  });
+  
+  res.status(200).send({
+    status: 200,
+    message: "Successfully refreshed a session!",
+    data: {
+      accessToken: session.accessToken,
+    },})
+  console.log(ticket);
+  res.send("Confirmed")
+
 }
