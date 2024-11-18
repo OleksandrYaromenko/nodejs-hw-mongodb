@@ -1,25 +1,40 @@
-import express from "express"
-import { ControllesrsGetContacts, ControllesrsGetContactsID, ControllesrsPost, ControllesrsDelete,ControllesrsPatch } from "../controllers/contacts.js";
+import express from "express";
+import {
+  ControllesrsGetContacts,
+  ControllesrsGetContactsID,
+  ControllesrsPost,
+  ControllesrsDelete,
+  ControllesrsPatch,
+} from "../controllers/contacts.js";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import { isValidId } from "../middlewares/ isValidId.js";
 import { validateBody } from "../middlewares/validateBody.js";
 import { contactsSchema } from "../validator/contacts.js";
 import { upload } from "../middlewares/upload.js";
 
-const router = express.Router()
-const jsonParser =express.json()
+const router = express.Router();
+const jsonParser = express.json();
 
-router.get("/",ctrlWrapper(ControllesrsGetContacts));
+router.get("/", ctrlWrapper(ControllesrsGetContacts));
 
-router.get("/:contactsID",isValidId, ctrlWrapper(ControllesrsGetContactsID));
-  
-router.post("/",upload.single("photo"), jsonParser,validateBody(contactsSchema), ctrlWrapper(ControllesrsPost));
+router.get("/:contactsID", isValidId, ctrlWrapper(ControllesrsGetContactsID));
 
-router.patch("/:contactsID",upload.single("photo"), isValidId,jsonParser, validateBody(contactsSchema),ctrlWrapper(ControllesrsPatch))
+router.post(
+  "/",
+  upload.single("photo"),
+  jsonParser,
+  validateBody(contactsSchema),
+  ctrlWrapper(ControllesrsPost)
+);
 
-router.delete("/:contactsID",isValidId, ctrlWrapper(ControllesrsDelete))
+router.patch(
+  "/:contactsID",
+  upload.single("photo"),
+  isValidId,
+  jsonParser,
+  ctrlWrapper(ControllesrsPatch)
+);
 
+router.delete("/:contactsID", isValidId, ctrlWrapper(ControllesrsDelete));
 
-
-  export default router;
-  
+export default router;
