@@ -92,7 +92,7 @@ export async function requestResetPassword(email) {
       from: "oleksandryaromenko21@gmail.com",
       to: email,
       subject: "Reset Password",
-      text: `Click on the link to reset your password: http://localhost:3000/auth/reset-password?token=${resetToken}`,
+      text: `Click on the link to reset your password: <a href="http://localhost:3000/auth/reset-password?token=${resetToken}">`,
     });
   } catch (error) {
     console.error(error);
