@@ -12,7 +12,7 @@ tags:
   - name: Auth
     description: Authentication and authorization.
 servers:
-  - url: http://localhost:3000
+  - url: https://nodejs-hw-mongodb-swagger-ho4q.onrender.com
 paths:
   /contacts:
     get:
