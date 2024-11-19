@@ -31,7 +31,6 @@ router.patch(
   "/:contactsID",
   upload.single("photo"),
   isValidId,
-  jsonParser,
   ctrlWrapper(ControllesrsPatch)
 );
 
