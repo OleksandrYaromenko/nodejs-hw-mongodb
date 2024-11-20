@@ -57,39 +57,42 @@ export async function logoutController(req, res) {
 export async function refreshController(req, res) {
   const { sessionID, refreshToken } = req.cookies;
 
- const session =  await refreshSession(sessionID, refreshToken);
- res.cookie("refreshToken", session.refreshToken, {
-  httpOnly: true,
-  expires: session.refreshTokenValidUtil,
-});
-res.cookie("sessionID", session._id, {
-  httpOnly: true,
-  expires: session.refreshTokenValidUtil,
-});
+  const session = await refreshSession(sessionID, refreshToken);
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUtil,
+  });
+  res.cookie("sessionID", session._id, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUtil,
+  });
 
-res.status(200).send({
-  status: 200,
-  message: "Successfully refreshed a session!",
-  data: {
-    accessToken: session.accessToken,
-  },
-});}
-
-
-export async function resetPasswordController(req, res) {
-  const{email} = req.body;
-  await requestResetPassword(email);
-
-res.send({
-  status: 200,
-  message: "Reset password email has been successfully sent.",
-  data: {},
-})
+  res.status(200).send({
+    status: 200,
+    message: "Successfully refreshed a session!",
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
 }
 
+export async function resetPasswordController(req, res) {
+  const { email } = req.body;
+  await requestResetPassword(email);
+
+  res.send({
+    status: 200,
+    message: "Reset password email has been successfully sent.",
+    data: {},
+  });
+}
 
 export async function resetPwdController(req, res) {
-  const {password, token} = req.body;
+  const { password, token } = req.body;
   await resetPassword(password, token);
-  res.send("reset password");
+  res.send({
+    status: 200,
+    message: "Password has been successfully reset.",
+    data: {},
+  });
 }
