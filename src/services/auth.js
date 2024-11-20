@@ -7,6 +7,14 @@ import jwt from "jsonwebtoken";
 import { sendMail } from "../utils/sendMail.js";
 import dotenv from "dotenv";
 dotenv.config();
+import path from "node:path";
+import fs from "node:fs";
+import handlebars from "handlebars";
+
+const RESET_PASSWORD_TEMPLATE = fs.readFileSync(
+  path.resolve("src/templates/reset-password.hbs"),
+  { encoding: "utf-8" }
+);
 
 export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
@@ -86,13 +94,14 @@ export async function requestResetPassword(email) {
     process.env.JWT_SECRET,
     { expiresIn: "15m" }
   );
+  const html = handlebars.compile(RESET_PASSWORD_TEMPLATE);
 
   try {
     await sendMail({
       from: "oleksandryaromenko21@gmail.com",
       to: email,
       subject: "Reset Password",
-      text: `Click on the link to reset your password: <a href="http://localhost:3000/auth/reset-password?token=${resetToken}">`,
+      html: html({ resetToken }),
     });
   } catch (error) {
     console.error(error);
